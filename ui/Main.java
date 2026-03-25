@@ -3,26 +3,35 @@ package ui;
 import java.util.Scanner;
 import model.Student;
 import service.StudentService;
+import service.AuthService;
 
 public class Main {
-
-    // ANSI COLORS
-    public static final String RESET = "\u001B[0m";
-    public static final String GREEN = "\u001B[32m";
-    public static final String RED = "\u001B[31m";
-    public static final String CYAN = "\u001B[36m";
-    public static final String YELLOW = "\u001B[33m";
 
     public static void main(String[] args) {
 
         Scanner sc = new Scanner(System.in);
+        AuthService auth = new AuthService();
+
+        System.out.println("===== LOGIN SYSTEM =====");
+
+        System.out.print("Enter Username: ");
+        String username = sc.nextLine();
+
+        System.out.print("Enter Password: ");
+        String password = sc.nextLine();
+
+        if (!auth.login(username, password)) {
+            System.out.println("Invalid credentials! Access denied.");
+            return;
+        }
+
+        System.out.println("Login successful!\n");
+
         StudentService service = new StudentService();
 
         while (true) {
 
-            System.out.println(CYAN + "\n======================================");
-            System.out.println("   STUDENT MANAGEMENT SYSTEM");
-            System.out.println("======================================" + RESET);
+            System.out.println("\n===== STUDENT MANAGEMENT SYSTEM =====");
             System.out.println("1. Add Student");
             System.out.println("2. View Students");
             System.out.println("3. Delete Student");
@@ -30,44 +39,28 @@ public class Main {
             System.out.println("5. Update Student");
             System.out.println("6. Sort Students");
             System.out.println("7. Exit");
-            System.out.print(YELLOW + "Enter your choice: " + RESET);
+            System.out.print("Enter choice: ");
 
             int choice;
 
             try {
                 choice = Integer.parseInt(sc.nextLine());
             } catch (Exception e) {
-                System.out.println(RED + "Invalid input!" + RESET);
+                System.out.println("Invalid input!");
                 continue;
             }
 
             switch (choice) {
 
                 case 1:
-                    int id;
-                    while (true) {
-                        try {
-                            System.out.print("Enter ID: ");
-                            id = Integer.parseInt(sc.nextLine());
-                            break;
-                        } catch (Exception e) {
-                            System.out.println(RED + "Invalid ID!" + RESET);
-                        }
-                    }
+                    System.out.print("Enter ID: ");
+                    int id = Integer.parseInt(sc.nextLine());
 
                     System.out.print("Enter Name: ");
                     String name = sc.nextLine();
 
-                    int age;
-                    while (true) {
-                        try {
-                            System.out.print("Enter Age: ");
-                            age = Integer.parseInt(sc.nextLine());
-                            break;
-                        } catch (Exception e) {
-                            System.out.println(RED + "Invalid Age!" + RESET);
-                        }
-                    }
+                    System.out.print("Enter Age: ");
+                    int age = Integer.parseInt(sc.nextLine());
 
                     service.addStudent(new Student(id, name, age));
                     break;
@@ -77,60 +70,26 @@ public class Main {
                     break;
 
                 case 3:
-                    int deleteId;
-                    while (true) {
-                        try {
-                            System.out.print("Enter ID to delete: ");
-                            deleteId = Integer.parseInt(sc.nextLine());
-                            break;
-                        } catch (Exception e) {
-                            System.out.println(RED + "Invalid input!" + RESET);
-                        }
-                    }
-                    service.deleteStudent(deleteId);
+                    System.out.print("Enter ID: ");
+                    service.deleteStudent(Integer.parseInt(sc.nextLine()));
                     break;
 
                 case 4:
-                    int searchId;
-                    while (true) {
-                        try {
-                            System.out.print("Enter ID to search: ");
-                            searchId = Integer.parseInt(sc.nextLine());
-                            break;
-                        } catch (Exception e) {
-                            System.out.println(RED + "Invalid input!" + RESET);
-                        }
-                    }
-                    service.searchStudent(searchId);
+                    System.out.print("Enter ID: ");
+                    service.searchStudent(Integer.parseInt(sc.nextLine()));
                     break;
 
                 case 5:
-                    int updateId;
-                    while (true) {
-                        try {
-                            System.out.print("Enter ID to update: ");
-                            updateId = Integer.parseInt(sc.nextLine());
-                            break;
-                        } catch (Exception e) {
-                            System.out.println(RED + "Invalid input!" + RESET);
-                        }
-                    }
+                    System.out.print("Enter ID: ");
+                    int uid = Integer.parseInt(sc.nextLine());
 
-                    System.out.print("Enter new Name: ");
+                    System.out.print("New Name: ");
                     String newName = sc.nextLine();
 
-                    int newAge;
-                    while (true) {
-                        try {
-                            System.out.print("Enter new Age: ");
-                            newAge = Integer.parseInt(sc.nextLine());
-                            break;
-                        } catch (Exception e) {
-                            System.out.println(RED + "Invalid input!" + RESET);
-                        }
-                    }
+                    System.out.print("New Age: ");
+                    int newAge = Integer.parseInt(sc.nextLine());
 
-                    service.updateStudent(updateId, newName, newAge);
+                    service.updateStudent(uid, newName, newAge);
                     break;
 
                 case 6:
@@ -138,15 +97,12 @@ public class Main {
                     break;
 
                 case 7:
-                    System.out.println(GREEN + "Exiting system..." + RESET);
+                    System.out.println("Exiting...");
                     return;
 
                 default:
-                    System.out.println(RED + "Invalid choice!" + RESET);
+                    System.out.println("Invalid choice!");
             }
-
-            System.out.println("\nPress Enter to continue...");
-            sc.nextLine();
         }
     }
 }
