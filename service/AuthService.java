@@ -2,6 +2,7 @@ package service;
 
 import java.util.HashMap;
 import java.security.MessageDigest;
+import java.nio.charset.StandardCharsets;
 
 public class AuthService {
 
@@ -31,11 +32,13 @@ public class AuthService {
         }
     }
 
-    // 🔐 HASH FUNCTION
+    // 🔐 HASH FUNCTION (SHA-256 + UTF-8)
     private String hashPassword(String password) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
-            byte[] hashBytes = md.digest(password.getBytes());
+
+            // ✅ Correct encoding (important)
+            byte[] hashBytes = md.digest(password.getBytes(StandardCharsets.UTF_8));
 
             StringBuilder sb = new StringBuilder();
             for (byte b : hashBytes) {
