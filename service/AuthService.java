@@ -1,16 +1,17 @@
 package service;
 
-import java.util.HashMap;
+import java.util.*;
+import java.io.*;
 import java.security.MessageDigest;
 import java.nio.charset.StandardCharsets;
 
 public class AuthService {
 
     private HashMap<String, String> users = new HashMap<>();
+    private final String FILE_NAME = "users.txt";
 
     public AuthService() {
-        // Default user (password = 1234 but stored as hash)
-        users.put("admin", hashPassword("1234"));
+        loadFromFile();
     }
 
     // 🔐 LOGIN
@@ -28,16 +29,42 @@ public class AuthService {
             System.out.println("User already exists!");
         } else {
             users.put(username, hashPassword(password));
+            saveToFile();
             System.out.println("User registered successfully!");
         }
     }
 
-    // 🔐 HASH FUNCTION (SHA-256 + UTF-8)
+    // 💾 SAVE USERS TO FILE
+    private void saveToFile() {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(FILE_NAME))) {
+            for (Map.Entry<String, String> entry : users.entrySet()) {
+                bw.write(entry.getKey() + "," + entry.getValue());
+                bw.newLine();
+            }
+        } catch (IOException e) {
+            System.out.println("Error saving users!");
+        }
+    }
+
+    // 📂 LOAD USERS FROM FILE
+    private void loadFromFile() {
+        try (BufferedReader br = new BufferedReader(new FileReader(FILE_NAME))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length == 2) {
+                    users.put(parts[0], parts[1]);
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("No existing users found.");
+        }
+    }
+
+    // 🔐 HASH FUNCTION
     private String hashPassword(String password) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
-
-            // ✅ Correct encoding (important)
             byte[] hashBytes = md.digest(password.getBytes(StandardCharsets.UTF_8));
 
             StringBuilder sb = new StringBuilder();
