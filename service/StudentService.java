@@ -17,7 +17,7 @@ public class StudentService {
     public void addStudent(Student s) {
         students.add(s);
         saveToFile();
-        System.out.println("Student added!");
+        System.out.println("Student added successfully!");
     }
 
     // VIEW
@@ -26,9 +26,16 @@ public class StudentService {
             System.out.println("No students found!");
             return;
         }
+
+        System.out.println("\n-------------------------------------------");
+        System.out.printf("%-10s %-20s %-5s\n", "ID", "NAME", "AGE");
+        System.out.println("-------------------------------------------");
+
         for (Student s : students) {
             s.display();
         }
+
+        System.out.println("-------------------------------------------");
     }
 
     // DELETE
@@ -46,6 +53,10 @@ public class StudentService {
     public void searchStudent(int id) {
         for (Student s : students) {
             if (s.id == id) {
+                System.out.println("\nStudent Found:");
+                System.out.println("-------------------------------------------");
+                System.out.printf("%-10s %-20s %-5s\n", "ID", "NAME", "AGE");
+                System.out.println("-------------------------------------------");
                 s.display();
                 return;
             }
@@ -53,7 +64,7 @@ public class StudentService {
         System.out.println("Student not found!");
     }
 
-    // UPDATE ⭐
+    // UPDATE
     public void updateStudent(int id, String name, int age) {
         for (Student s : students) {
             if (s.id == id) {
@@ -67,7 +78,13 @@ public class StudentService {
         System.out.println("Student not found!");
     }
 
-    // SAVE FILE ⭐
+    // SORT
+    public void sortStudentsByName() {
+        students.sort(Comparator.comparing(s -> s.name));
+        System.out.println("Students sorted by name!");
+    }
+
+    // SAVE FILE
     private void saveToFile() {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(FILE_NAME))) {
             for (Student s : students) {
@@ -75,11 +92,11 @@ public class StudentService {
                 bw.newLine();
             }
         } catch (Exception e) {
-            System.out.println("Error saving file");
+            System.out.println("Error saving file!");
         }
     }
 
-    // LOAD FILE ⭐
+    // LOAD FILE
     private void loadFromFile() {
         try (BufferedReader br = new BufferedReader(new FileReader(FILE_NAME))) {
             String line;
@@ -92,7 +109,7 @@ public class StudentService {
                 ));
             }
         } catch (Exception e) {
-            System.out.println("No previous data found");
+            System.out.println("No previous data found.");
         }
     }
 }
