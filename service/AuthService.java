@@ -8,7 +8,7 @@ public class AuthService {
     private HashMap<String, String> users = new HashMap<>();
 
     public AuthService() {
-        // Default user (password = 1234)
+        // Default user (password = 1234 but stored as hash)
         users.put("admin", hashPassword("1234"));
     }
 
@@ -31,7 +31,7 @@ public class AuthService {
         }
     }
 
-    // 🔐 HASH FUNCTION (SHA-256)
+    // 🔐 HASH FUNCTION
     private String hashPassword(String password) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
