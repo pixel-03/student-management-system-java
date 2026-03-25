@@ -2,6 +2,7 @@ package ui;
 
 import service.StudentService;
 import service.Database;
+import service.AuthService;
 import model.Student;
 
 import java.util.Scanner;
@@ -10,10 +11,50 @@ public class Main {
 
     public static void main(String[] args) {
 
-        // 🔥 STEP 2 (Database Init)
         Database.init();
 
         Scanner sc = new Scanner(System.in);
+        AuthService auth = new AuthService();
+
+        System.out.println("===== LOGIN SYSTEM =====");
+
+        boolean isLoggedIn = false;
+
+        while (!isLoggedIn) {
+            System.out.println("\n1. Login");
+            System.out.println("2. Register");
+            System.out.print("Choose: ");
+            int option = sc.nextInt();
+            sc.nextLine();
+
+            if (option == 1) {
+                System.out.print("Username: ");
+                String username = sc.nextLine();
+
+                System.out.print("Password: ");
+                String password = sc.nextLine();
+
+                if (auth.login(username, password)) {
+                    System.out.println("Login successful!");
+                    isLoggedIn = true;
+                } else {
+                    System.out.println("Invalid credentials!");
+                }
+
+            } else if (option == 2) {
+                System.out.print("New Username: ");
+                String username = sc.nextLine();
+
+                System.out.print("New Password: ");
+                String password = sc.nextLine();
+
+                auth.register(username, password);
+            } else {
+                System.out.println("Invalid option!");
+            }
+        }
+
+        // 🔥 AFTER LOGIN → SYSTEM STARTS
         StudentService service = new StudentService();
 
         while (true) {
