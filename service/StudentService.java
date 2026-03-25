@@ -17,7 +17,7 @@ public class StudentService {
     public void addStudent(Student s) {
         students.add(s);
         saveToFile();
-        System.out.println("Student added successfully!");
+        System.out.println("Student added!");
     }
 
     // VIEW
@@ -40,7 +40,8 @@ public class StudentService {
 
     // DELETE
     public void deleteStudent(int id) {
-        boolean removed = students.removeIf(s -> s.id == id);
+        boolean removed = students.removeIf(s -> s.getId() == id);
+
         if (removed) {
             saveToFile();
             System.out.println("Student deleted!");
@@ -52,7 +53,7 @@ public class StudentService {
     // SEARCH
     public void searchStudent(int id) {
         for (Student s : students) {
-            if (s.id == id) {
+            if (s.getId() == id) {
                 System.out.println("\nStudent Found:");
                 System.out.println("-------------------------------------------");
                 System.out.printf("%-10s %-20s %-5s\n", "ID", "NAME", "AGE");
@@ -67,9 +68,9 @@ public class StudentService {
     // UPDATE
     public void updateStudent(int id, String name, int age) {
         for (Student s : students) {
-            if (s.id == id) {
-                s.name = name;
-                s.age = age;
+            if (s.getId() == id) {
+                s.setName(name);
+                s.setAge(age);
                 saveToFile();
                 System.out.println("Student updated!");
                 return;
@@ -80,7 +81,7 @@ public class StudentService {
 
     // SORT
     public void sortStudentsByName() {
-        students.sort(Comparator.comparing(s -> s.name));
+        students.sort(Comparator.comparing(Student::getName));
         System.out.println("Students sorted by name!");
     }
 
@@ -88,7 +89,7 @@ public class StudentService {
     private void saveToFile() {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(FILE_NAME))) {
             for (Student s : students) {
-                bw.write(s.id + "," + s.name + "," + s.age);
+                bw.write(s.toFileString());
                 bw.newLine();
             }
         } catch (Exception e) {
@@ -101,12 +102,7 @@ public class StudentService {
         try (BufferedReader br = new BufferedReader(new FileReader(FILE_NAME))) {
             String line;
             while ((line = br.readLine()) != null) {
-                String[] data = line.split(",");
-                students.add(new Student(
-                        Integer.parseInt(data[0]),
-                        data[1],
-                        Integer.parseInt(data[2])
-                ));
+                students.add(Student.fromFileString(line));
             }
         } catch (Exception e) {
             System.out.println("No previous data found.");
