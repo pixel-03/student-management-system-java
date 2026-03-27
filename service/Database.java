@@ -17,12 +17,12 @@ public class Database {
         }
     }
 
-    // Create table if not exists
     public static void init() {
+
         String sql = "CREATE TABLE IF NOT EXISTS students (" +
-                     "id INTEGER PRIMARY KEY, " +
-                     "name TEXT, " +
-                     "age INTEGER)";
+                "id INTEGER PRIMARY KEY, " +
+                "name TEXT NOT NULL, " +
+                "age INTEGER NOT NULL)";
 
         try (Connection conn = connect();
              Statement stmt = conn.createStatement()) {
