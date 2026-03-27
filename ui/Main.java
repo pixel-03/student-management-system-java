@@ -4,6 +4,7 @@ import service.*;
 import model.Student;
 
 import java.util.Scanner;
+import java.io.Console;
 
 public class Main {
 
@@ -31,8 +32,17 @@ public class Main {
                 System.out.print("Username: ");
                 String username = sc.nextLine();
 
-                System.out.print("Password: ");
-                String password = sc.nextLine();
+                // 🔐 PASSWORD MASKING
+                Console console = System.console();
+                String password;
+
+                if (console != null) {
+                    char[] pwd = console.readPassword("Password: ");
+                    password = new String(pwd);
+                } else {
+                    System.out.print("Password: ");
+                    password = sc.nextLine();
+                }
 
                 role = auth.login(username, password);
 
@@ -46,13 +56,24 @@ public class Main {
                 System.out.print("New Username: ");
                 String username = sc.nextLine();
 
-                System.out.print("New Password: ");
-                String password = sc.nextLine();
+                // 🔐 PASSWORD MASKING (REGISTER)
+                Console console = System.console();
+                String password;
+
+                if (console != null) {
+                    char[] pwd = console.readPassword("New Password: ");
+                    password = new String(pwd);
+                } else {
+                    System.out.print("New Password: ");
+                    password = sc.nextLine();
+                }
 
                 System.out.print("Enter role (admin/user): ");
                 String newRole = sc.nextLine().toLowerCase();
 
                 auth.register(username, password, newRole);
+            } else {
+                System.out.println("Invalid option!");
             }
         }
 
@@ -132,7 +153,12 @@ public class Main {
                         break;
 
                     case 7:
+                        System.out.println("Exiting...");
+                        sc.close();
                         System.exit(0);
+
+                    default:
+                        System.out.println("Invalid choice!");
                 }
 
             } else {
@@ -154,9 +180,14 @@ public class Main {
                         break;
 
                     case 4:
+                        System.out.println("Exiting...");
+                        sc.close();
                         System.exit(0);
+
+                    default:
+                        System.out.println("Invalid choice!");
                 }
             }
         }
     }
-}
+}                        
