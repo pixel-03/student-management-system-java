@@ -3,13 +3,15 @@ package service;
 import model.Student;
 
 import java.sql.*;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class StudentService {
 
     // ADD STUDENT
     public void addStudent(Student s) {
 
-        // ✅ VALIDATION
         if (s.getId() <= 0) {
             System.out.println("Invalid ID!");
             return;
@@ -31,7 +33,6 @@ public class StudentService {
         try (Connection conn = Database.connect();
              PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
 
-            // Check duplicate ID
             checkStmt.setInt(1, s.getId());
             ResultSet rs = checkStmt.executeQuery();
 
@@ -115,7 +116,6 @@ public class StudentService {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                System.out.println("\nStudent Found:");
                 System.out.printf("%-10d %-20s %-5d\n",
                         rs.getInt("id"),
                         rs.getString("name"),
@@ -129,7 +129,7 @@ public class StudentService {
         }
     }
 
-    // 🔥 NEW: SEARCH BY NAME
+    // SEARCH BY NAME
     public void searchStudentByName(String name) {
 
         String sql = "SELECT * FROM students WHERE name LIKE ?";
@@ -143,8 +143,7 @@ public class StudentService {
 
             boolean found = false;
 
-            System.out.println("\nSearch Results:");
-            System.out.println("-------------------------------------------");
+            System.out.println("\n-------------------------------------------");
             System.out.printf("%-10s %-20s %-5s\n", "ID", "NAME", "AGE");
             System.out.println("-------------------------------------------");
 
@@ -199,6 +198,34 @@ public class StudentService {
 
         } catch (SQLException e) {
             System.out.println("Database error: " + e.getMessage());
+        }
+    }
+
+    // 🔥 EXPORT FEATURE
+    public void exportToCSV() {
+
+        String sql = "SELECT * FROM students";
+
+        try (Connection conn = Database.connect();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql);
+             BufferedWriter bw = new BufferedWriter(new FileWriter("students.csv"))) {
+
+            // Header
+            bw.write("ID,Name,Age");
+            bw.newLine();
+
+            while (rs.next()) {
+                bw.write(rs.getInt("id") + "," +
+                         rs.getString("name") + "," +
+                         rs.getInt("age"));
+                bw.newLine();
+            }
+
+            System.out.println("Students exported to students.csv successfully!");
+
+        } catch (SQLException | IOException e) {
+            System.out.println("Error exporting data: " + e.getMessage());
         }
     }
 }
