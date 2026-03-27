@@ -32,7 +32,6 @@ public class Main {
                 System.out.print("Username: ");
                 String username = sc.nextLine();
 
-                // 🔐 PASSWORD MASKING
                 Console console = System.console();
                 String password;
 
@@ -56,7 +55,6 @@ public class Main {
                 System.out.print("New Username: ");
                 String username = sc.nextLine();
 
-                // 🔐 PASSWORD MASKING (REGISTER)
                 Console console = System.console();
                 String password;
 
@@ -90,7 +88,8 @@ public class Main {
                 System.out.println("4. Search Student (by ID)");
                 System.out.println("5. Update Student");
                 System.out.println("6. Search by Name");
-                System.out.println("7. Exit");
+                System.out.println("7. Export Students (CSV)");
+                System.out.println("8. Exit");
             } else {
                 System.out.println("1. View Students");
                 System.out.println("2. Search Student (by ID)");
@@ -153,6 +152,10 @@ public class Main {
                         break;
 
                     case 7:
+                        service.exportToCSV();
+                        break;
+
+                    case 8:
                         System.out.println("Exiting...");
                         sc.close();
                         System.exit(0);
@@ -190,4 +193,4 @@ public class Main {
             }
         }
     }
-}                        
+}
