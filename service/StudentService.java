@@ -9,13 +9,29 @@ public class StudentService {
     // ADD STUDENT
     public void addStudent(Student s) {
 
+        // ✅ VALIDATION
+        if (s.getId() <= 0) {
+            System.out.println("Invalid ID!");
+            return;
+        }
+
+        if (s.getName().trim().isEmpty()) {
+            System.out.println("Name cannot be empty!");
+            return;
+        }
+
+        if (s.getAge() <= 0) {
+            System.out.println("Invalid age!");
+            return;
+        }
+
         String checkSql = "SELECT id FROM students WHERE id = ?";
         String insertSql = "INSERT INTO students(id, name, age) VALUES(?, ?, ?)";
 
         try (Connection conn = Database.connect();
              PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
 
-            // Check if ID exists
+            // Check duplicate ID
             checkStmt.setInt(1, s.getId());
             ResultSet rs = checkStmt.executeQuery();
 
@@ -24,7 +40,6 @@ public class StudentService {
                 return;
             }
 
-            // Insert
             PreparedStatement insertStmt = conn.prepareStatement(insertSql);
             insertStmt.setInt(1, s.getId());
             insertStmt.setString(2, s.getName());
@@ -38,7 +53,7 @@ public class StudentService {
         }
     }
 
-    // VIEW STUDENTS
+    // VIEW
     public void viewStudents() {
 
         String sql = "SELECT * FROM students";
@@ -65,7 +80,7 @@ public class StudentService {
         }
     }
 
-    // DELETE STUDENT
+    // DELETE
     public void deleteStudent(int id) {
 
         String sql = "DELETE FROM students WHERE id = ?";
@@ -88,7 +103,7 @@ public class StudentService {
         }
     }
 
-    // SEARCH STUDENT
+    // SEARCH BY ID
     public void searchStudent(int id) {
 
         String sql = "SELECT * FROM students WHERE id = ?";
@@ -114,8 +129,56 @@ public class StudentService {
         }
     }
 
-    // UPDATE STUDENT
+    // 🔥 NEW: SEARCH BY NAME
+    public void searchStudentByName(String name) {
+
+        String sql = "SELECT * FROM students WHERE name LIKE ?";
+
+        try (Connection conn = Database.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, "%" + name + "%");
+
+            ResultSet rs = stmt.executeQuery();
+
+            boolean found = false;
+
+            System.out.println("\nSearch Results:");
+            System.out.println("-------------------------------------------");
+            System.out.printf("%-10s %-20s %-5s\n", "ID", "NAME", "AGE");
+            System.out.println("-------------------------------------------");
+
+            while (rs.next()) {
+                found = true;
+                System.out.printf("%-10d %-20s %-5d\n",
+                        rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getInt("age"));
+            }
+
+            if (!found) {
+                System.out.println("No students found!");
+            }
+
+            System.out.println("-------------------------------------------");
+
+        } catch (SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
+        }
+    }
+
+    // UPDATE
     public void updateStudent(int id, String name, int age) {
+
+        if (name.trim().isEmpty()) {
+            System.out.println("Name cannot be empty!");
+            return;
+        }
+
+        if (age <= 0) {
+            System.out.println("Invalid age!");
+            return;
+        }
 
         String sql = "UPDATE students SET name = ?, age = ? WHERE id = ?";
 
