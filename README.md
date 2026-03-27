@@ -1,26 +1,31 @@
-🎓 Student Management System (Java)
+🚀 Student Management System (Java + JDBC + SQLite)
 
-A simple Java-based Student Management System built using Object-Oriented Programming principles.
-This project allows users to manage student records efficiently using a command-line interface.
+A console-based Student Management System built using Java with a layered architecture.
+This project demonstrates real-world backend concepts like authentication, database integration, and CRUD operations.
 
 ---
 
-🚀 Features
+🔐 Features
 
+- 🔑 User Authentication (Login & Register)
+- 🔒 Password Hashing (SHA-256)
 - ➕ Add Student
-- 📋 View All Students
+- 📋 View Students (Table Format)
 - ❌ Delete Student
 - 🔍 Search Student by ID
+- 🔎 Search Student by Name
 - ✏ Update Student Details
-- 💾 File Saving (Data Persistence)
+- 💾 Persistent Storage (SQLite Database)
 
 ---
 
 🧠 Technologies Used
 
 - Java
-- Object-Oriented Programming (OOP)
-- File Handling (BufferedReader, BufferedWriter)
+- JDBC (Java Database Connectivity)
+- SQLite Database
+- OOP (Object-Oriented Programming)
+- SHA-256 Password Hashing
 
 ---
 
@@ -32,12 +37,16 @@ student-management-system-java/
 │   └── Student.java
 │
 ├── service/
-│   └── StudentService.java
+│   ├── StudentService.java
+│   ├── AuthService.java
+│   └── Database.java
 │
 ├── ui/
 │   └── Main.java
 │
-└── students.txt
+├── users.txt
+├── students.db
+└── README.md
 
 ---
 
@@ -47,18 +56,36 @@ student-management-system-java/
 
 javac model/*.java service/*.java ui/*.java
 
-2. Run the program:
+2. Run the application:
 
 java ui.Main
 
 ---
 
-💡 Future Improvements
+🔐 Default Login
 
-- Add GUI (JavaFX / Swing)
-- Database integration (MySQL)
-- Authentication system
-- Sorting & filtering
+Username: admin
+Password: 1234
+
+---
+
+💡 Key Highlights
+
+- Layered architecture (UI → Service → Database)
+- Secure password storage using hashing
+- Input validation and error handling
+- Clean and formatted console UI
+- Real database usage (not in-memory)
+
+---
+
+🚀 Future Improvements
+
+- Role-based access (Admin/User)
+- GUI (JavaFX or Web UI)
+- REST API using Spring Boot
+- MySQL integration
+- Deployment as a web application
 
 ---
 
@@ -70,4 +97,4 @@ Mohammed Noor
 
 ⭐ Note
 
-This project is built for learning purposes and demonstrates core Java + OOP + file handling concepts.
+This project is built for learning and demonstrates core backend development concepts in Java. It can be extended into a full-scale system like Campus Hive.
