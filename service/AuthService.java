@@ -7,38 +7,45 @@ import java.nio.charset.StandardCharsets;
 
 public class AuthService {
 
-    private HashMap<String, String> users = new HashMap<>();
+    private HashMap<String, String[]> users = new HashMap<>();
     private final String FILE_NAME = "users.txt";
 
     public AuthService() {
         loadFromFile();
     }
 
-    // 🔐 LOGIN
-    public boolean login(String username, String password) {
+    // 🔐 LOGIN (returns role)
+    public String login(String username, String password) {
         if (users.containsKey(username)) {
-            String hashedInput = hashPassword(password);
-            return users.get(username).equals(hashedInput);
+            String[] data = users.get(username);
+            String storedHash = data[0];
+            String role = data[1];
+
+            String inputHash = hashPassword(password);
+
+            if (storedHash.equals(inputHash)) {
+                return role; // 👈 return role
+            }
         }
-        return false;
+        return null;
     }
 
     // 📝 REGISTER
-    public void register(String username, String password) {
+    public void register(String username, String password, String role) {
         if (users.containsKey(username)) {
             System.out.println("User already exists!");
         } else {
-            users.put(username, hashPassword(password));
+            users.put(username, new String[]{hashPassword(password), role});
             saveToFile();
             System.out.println("User registered successfully!");
         }
     }
 
-    // 💾 SAVE USERS TO FILE
+    // 💾 SAVE
     private void saveToFile() {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(FILE_NAME))) {
-            for (Map.Entry<String, String> entry : users.entrySet()) {
-                bw.write(entry.getKey() + "," + entry.getValue());
+            for (Map.Entry<String, String[]> entry : users.entrySet()) {
+                bw.write(entry.getKey() + "," + entry.getValue()[0] + "," + entry.getValue()[1]);
                 bw.newLine();
             }
         } catch (IOException e) {
@@ -46,14 +53,14 @@ public class AuthService {
         }
     }
 
-    // 📂 LOAD USERS FROM FILE
+    // 📂 LOAD
     private void loadFromFile() {
         try (BufferedReader br = new BufferedReader(new FileReader(FILE_NAME))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length == 2) {
-                    users.put(parts[0], parts[1]);
+                if (parts.length == 3) {
+                    users.put(parts[0], new String[]{parts[1], parts[2]});
                 }
             }
         } catch (IOException e) {
@@ -61,7 +68,7 @@ public class AuthService {
         }
     }
 
-    // 🔐 HASH FUNCTION
+    // 🔐 HASH
     private String hashPassword(String password) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
