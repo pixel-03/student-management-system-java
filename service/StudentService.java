@@ -1,32 +1,46 @@
 package service;
 
 import model.Student;
+
 import java.sql.*;
-import java.util.*;
 
 public class StudentService {
 
-    // ADD
+    // ADD STUDENT
     public void addStudent(Student s) {
-        String sql = "INSERT INTO students(id, name, age) VALUES(?, ?, ?)";
+
+        String checkSql = "SELECT id FROM students WHERE id = ?";
+        String insertSql = "INSERT INTO students(id, name, age) VALUES(?, ?, ?)";
 
         try (Connection conn = Database.connect();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
 
-            stmt.setInt(1, s.getId());
-            stmt.setString(2, s.getName());
-            stmt.setInt(3, s.getAge());
+            // Check if ID exists
+            checkStmt.setInt(1, s.getId());
+            ResultSet rs = checkStmt.executeQuery();
 
-            stmt.executeUpdate();
-            System.out.println("Student added!");
+            if (rs.next()) {
+                System.out.println("Student ID already exists!");
+                return;
+            }
 
-        } catch (Exception e) {
-            System.out.println("Error adding student!");
+            // Insert
+            PreparedStatement insertStmt = conn.prepareStatement(insertSql);
+            insertStmt.setInt(1, s.getId());
+            insertStmt.setString(2, s.getName());
+            insertStmt.setInt(3, s.getAge());
+
+            insertStmt.executeUpdate();
+            System.out.println("Student added successfully!");
+
+        } catch (SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
         }
     }
 
-    // VIEW
+    // VIEW STUDENTS
     public void viewStudents() {
+
         String sql = "SELECT * FROM students";
 
         try (Connection conn = Database.connect();
@@ -44,29 +58,39 @@ public class StudentService {
                         rs.getInt("age"));
             }
 
-        } catch (Exception e) {
-            System.out.println("Error fetching students!");
+            System.out.println("-------------------------------------------");
+
+        } catch (SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
         }
     }
 
-    // DELETE
+    // DELETE STUDENT
     public void deleteStudent(int id) {
+
         String sql = "DELETE FROM students WHERE id = ?";
 
         try (Connection conn = Database.connect();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
-            stmt.executeUpdate();
-            System.out.println("Student deleted!");
 
-        } catch (Exception e) {
-            System.out.println("Error deleting student!");
+            int rows = stmt.executeUpdate();
+
+            if (rows > 0) {
+                System.out.println("Student deleted!");
+            } else {
+                System.out.println("Student not found!");
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
         }
     }
 
-    // SEARCH
+    // SEARCH STUDENT
     public void searchStudent(int id) {
+
         String sql = "SELECT * FROM students WHERE id = ?";
 
         try (Connection conn = Database.connect();
@@ -76,6 +100,7 @@ public class StudentService {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
+                System.out.println("\nStudent Found:");
                 System.out.printf("%-10d %-20s %-5d\n",
                         rs.getInt("id"),
                         rs.getString("name"),
@@ -84,13 +109,14 @@ public class StudentService {
                 System.out.println("Student not found!");
             }
 
-        } catch (Exception e) {
-            System.out.println("Error searching student!");
+        } catch (SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
         }
     }
 
-    // UPDATE
+    // UPDATE STUDENT
     public void updateStudent(int id, String name, int age) {
+
         String sql = "UPDATE students SET name = ?, age = ? WHERE id = ?";
 
         try (Connection conn = Database.connect();
@@ -100,11 +126,16 @@ public class StudentService {
             stmt.setInt(2, age);
             stmt.setInt(3, id);
 
-            stmt.executeUpdate();
-            System.out.println("Student updated!");
+            int rows = stmt.executeUpdate();
 
-        } catch (Exception e) {
-            System.out.println("Error updating student!");
+            if (rows > 0) {
+                System.out.println("Student updated!");
+            } else {
+                System.out.println("Student not found!");
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
         }
     }
 }
