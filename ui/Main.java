@@ -11,6 +11,7 @@ public class Main {
 
     public static void main(String[] args) {
 
+        // 🔥 Initialize database
         Database.init();
 
         Scanner sc = new Scanner(System.in);
@@ -20,10 +21,12 @@ public class Main {
 
         boolean isLoggedIn = false;
 
+        // 🔐 LOGIN / REGISTER LOOP
         while (!isLoggedIn) {
             System.out.println("\n1. Login");
             System.out.println("2. Register");
             System.out.print("Choose: ");
+
             int option = sc.nextInt();
             sc.nextLine();
 
@@ -54,7 +57,7 @@ public class Main {
             }
         }
 
-        // 🔥 AFTER LOGIN → SYSTEM STARTS
+        // 🔥 AFTER LOGIN → MAIN SYSTEM
         StudentService service = new StudentService();
 
         while (true) {
@@ -62,9 +65,10 @@ public class Main {
             System.out.println("1. Add Student");
             System.out.println("2. View Students");
             System.out.println("3. Delete Student");
-            System.out.println("4. Search Student");
+            System.out.println("4. Search Student (by ID)");
             System.out.println("5. Update Student");
-            System.out.println("6. Exit");
+            System.out.println("6. Search by Name");
+            System.out.println("7. Exit");
             System.out.print("Enter choice: ");
 
             int choice = sc.nextInt();
@@ -116,6 +120,13 @@ public class Main {
                     break;
 
                 case 6:
+                    sc.nextLine();
+                    System.out.print("Enter name: ");
+                    String nameSearch = sc.nextLine();
+                    service.searchStudentByName(nameSearch);
+                    break;
+
+                case 7:
                     System.out.println("Exiting...");
                     sc.close();
                     System.exit(0);
